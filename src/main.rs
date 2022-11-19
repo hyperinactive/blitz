@@ -1,5 +1,7 @@
 mod core;
 
+use crate::core::database::Database;
+
 // TODO: decide
 // write a parser/tokenizer for sql or have something like mongo?
 // maybe write an easy to use and simple database
@@ -28,5 +30,6 @@ mod core;
 // client
 
 fn main() {
-    println!("Hello, world!");
+    // TODO: initial db list should read from a file
+    println!("Db has started");
 }

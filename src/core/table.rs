@@ -1,3 +1,5 @@
+use super::column::Column;
+
 // ok, so the table needs to have:
 // name - string
 // columns - new struct
@@ -8,7 +10,7 @@
 // list of triggers for the table
 pub struct Table {
     name: String,
-    columns: Vec<String>, // TODO(ap): actual column struct pls
+    columns: Vec<Column>, // TODO(ap): actual column struct pls
     indexes: Vec<String>, // TODO(ap): actual index struct pls
     triggers: Vec<String>,
 }
@@ -16,7 +18,7 @@ pub struct Table {
 impl Table {
     pub fn new(
         name: &str,
-        columns: Option<Vec<String>>,
+        columns: Option<Vec<Column>>,
         index: Option<Vec<String>>,
         triggers: Option<Vec<String>>,
     ) -> Table {
@@ -24,7 +26,7 @@ impl Table {
             name: name.to_string(),
             columns: match columns {
                 Some(cols) => cols,
-                None => Vec::new() as Vec<String>,
+                None => Vec::new() as Vec<Column>,
             },
             indexes: match index {
                 Some(ind) => ind,
