@@ -8,6 +8,7 @@ use super::column::Column;
 // indexes on this table
 // the page number for the root BTree page of the table in the db file
 // list of triggers for the table
+#[derive(Debug)]
 pub struct Table {
     name: String,
     columns: Vec<Column>, // TODO(ap): actual column struct pls

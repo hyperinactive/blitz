@@ -2,6 +2,7 @@ use std::collections::{BTreeSet, HashSet};
 
 use super::{index::Index, table::Table};
 
+#[derive(Debug)]
 pub struct Database {
     name: String,
     tables: HashSet<Table>,

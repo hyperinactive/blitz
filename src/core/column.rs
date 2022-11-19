@@ -1,5 +1,6 @@
 // TODO: i128 and be done with it?
 // create variables at runtime based on max number provided?
+#[derive(Debug)]
 pub enum ColumnType {
     STRING(i32),
     BOOL(bool),
@@ -8,6 +9,7 @@ pub enum ColumnType {
     DATE(String), // NOTE: have this be a string of a valid date
 }
 
+#[derive(Debug)]
 pub struct Column {
     name: String,
     column_type: ColumnType,
@@ -20,7 +22,7 @@ pub struct Column {
 impl Column {
     pub fn new(
         name: &str,
-        column_tye: ColumnType,
+        _column_tye: ColumnType,
         default_value: &str,
         not_null: bool,
         is_primary: bool,
