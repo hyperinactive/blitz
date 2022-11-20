@@ -6,7 +6,7 @@ use super::{index::Index, table::Table};
 pub struct Database {
     name: String,
     tables: HashSet<Table>,
-    indexTree: BTreeSet<Index>,
+    index_tree: BTreeSet<Index>,
 }
 
 impl Database {
@@ -17,7 +17,7 @@ impl Database {
                 Some(tabs) => tabs,
                 None => HashSet::new() as HashSet<Table>,
             },
-            indexTree: BTreeSet::new(),
+            index_tree: BTreeSet::new(),
         }
     }
 }

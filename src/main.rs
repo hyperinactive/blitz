@@ -1,5 +1,8 @@
+use cli::cli_processor::CliProcessor;
+
+mod cli;
 mod core;
-use crate::core::file_system::FileSystem;
+mod util;
 
 // TODO: decide
 // write a parser/tokenizer for sql or have something like mongo?
@@ -29,6 +32,5 @@ use crate::core::file_system::FileSystem;
 // client
 
 fn main() {
-    // TODO: initial db list should read from a file
-    println!("Db has started");
+    CliProcessor::start();
 }
