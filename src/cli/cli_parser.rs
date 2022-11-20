@@ -1,7 +1,4 @@
-pub struct Token {
-    name: String,
-    value: String, // NOTE: we clear this hurdle when we get to it
-}
+use super::token::Token;
 
 pub struct CliParser {
     token_stream: Vec<Token>,
