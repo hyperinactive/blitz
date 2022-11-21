@@ -7,7 +7,7 @@ impl CliProcessor {
     pub fn start() {
         let mut input = String::new();
 
-        outputln!("Blitzcrank starting up");
+        outputln!("Fired up and ready to serve");
 
         loop {
             output!("");
@@ -19,15 +19,11 @@ impl CliProcessor {
 
             let args: Vec<&str> = input.split_whitespace().collect();
 
-            let arg = match args.get(0) {
-                Some(arg_0) => arg_0,
-                _ => {
-                    outputln!("No arguments provided");
-                    continue;
-                }
-            };
+            if args.len() == 0 {
+                continue;
+            }
 
-            if (*arg) == "exit" {
+            if args[0] == "exit" {
                 break;
             }
 

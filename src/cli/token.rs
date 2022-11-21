@@ -35,127 +35,68 @@
 
 // in db *db_name* in table *table_name* create column *column_name*
 
-use std::slice::SliceIndex;
+use std::collections::HashMap;
 
-use crate::output;
+use lazy_static::lazy_static;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Token {
-    t_type: String,
-    // most token types won't need a value
-    // needed for keywords and operators though
-    value: Option<String>, // NOTE: we clear this hurdle when we get to it
+    pub t_type: String,
+    pub value: Option<String>,
 }
 
-pub static KEYWORDS: [&str; 11] = [
-    "create", "update", "delete", "in", "database", "table", "column", "unique", "p_key", "f_key",
-    "default",
-];
-
-pub static TOKEN_TYPES: [&str; 5] = ["EOF", "IDENT", "LBRACE", "RBRACE", "KEYWORD"];
-
-/// ### Tokenizer
-/// Takes parsed string input vector and returns token output.
-pub struct Tokenizer {
-    input: Vec<String>,
-    index: usize,
-}
-
-impl Tokenizer {
-    pub fn new(input: Vec<&str>) -> Self {
-        let mut mapped_input = Vec::new();
-
-        if (*input.last().unwrap()) != "EOF" {
-            panic!("Invalid input. No EOF found");
+impl Token {
+    pub fn new(token_type: &str, value: Option<String>) -> Self {
+        Token {
+            t_type: token_type.to_string(),
+            value,
         }
-
-        for i in input {
-            mapped_input.push(String::from(i))
-        }
-
-        Tokenizer {
-            index: 0,
-            input: mapped_input,
-        }
-    }
-
-    pub fn parse(&mut self) -> Vec<Token> {
-        let mut output: Vec<Token> = Vec::new();
-
-        for i in self.input.iter() {
-            if TOKEN_TYPES.contains(&i.as_str()) {
-                output.push(Token {
-                    t_type: i.to_string(),
-                    value: None,
-                });
-                continue;
-            }
-
-            if KEYWORDS.contains(&i.as_str()) {
-                output.push(Token {
-                    t_type: "KEYWORD".to_string(),
-                    value: Some(i.to_string()),
-                });
-                continue;
-            };
-
-            output.push(Token {
-                t_type: "IDENT".to_string(),
-                value: Some(i.to_string()),
-            });
-        }
-
-        output
     }
 }
 
-// ***************************************************************************
-// TESTS
-// ***************************************************************************
-
-#[cfg(test)]
-mod tests {
-    use super::{Token, Tokenizer};
-
-    fn vec_compare<T: PartialEq>(a: &Vec<T>, b: &Vec<T>) -> bool {
-        let matching = a.iter().zip(b.iter()).filter(|&(a, b)| a == b).count();
-        matching == a.len() && matching == b.len()
-    }
-
-    #[test]
-    fn parse_input() {
-        let input = vec!["create", "database", "hello_there", "EOF"];
-        let tokens = Tokenizer::new(input).parse();
-
-        let mut expected = vec![
-            Token {
-                t_type: "KEYWORD".to_string(),
-                value: Some("create".to_string()),
-            },
-            Token {
-                t_type: "KEYWORD".to_string(),
-                value: Some("database".to_string()),
-            },
-            Token {
-                t_type: "IDENT".to_string(),
-                value: Some("hello_there".to_string()),
-            },
-            Token {
-                t_type: "EOF".to_string(),
-                value: None,
-            },
-        ];
-
-        assert!(vec_compare(&tokens, &expected), "These don't match");
-
-        // assert_eq!(tokens, expected);
-    }
-
-    #[test]
-    #[should_panic(expected = "Invalid input. No EOF found")]
-    fn no_eof() {
-        let input = vec!["create", "database", "hello_there"];
-        Tokenizer::new(input);
-        // assert_eq!(tokens, expected);
-    }
+lazy_static! {
+    pub static ref KEYWORDS: HashMap<&'static str, u8> = {
+        let map: HashMap<&'static str, u8> = [
+            ("create", 0),
+            ("read", 1),
+            ("update", 2),
+            ("delete", 3),
+            ("in", 4),
+            ("database", 5),
+            ("table", 6),
+            ("column", 7),
+        ]
+        .iter()
+        .cloned()
+        .collect();
+        map
+    };
+    pub static ref CRUD_KEYWORDS: HashMap<&'static str, u8> = {
+        let map: HashMap<&'static str, u8> =
+            [("create", 0), ("read", 1), ("update", 2), ("delete", 3)]
+                .iter()
+                .cloned()
+                .collect();
+        map
+    };
+    pub static ref STRUCT_KEYWORDS: HashMap<&'static str, u8> = {
+        let map: HashMap<&'static str, u8> = [("database", 0), ("table", 1), ("column", 2)]
+            .iter()
+            .cloned()
+            .collect();
+        map
+    };
+    pub static ref TOKEN_TYPES: HashMap<&'static str, u8> = {
+        let map: HashMap<&'static str, u8> = [
+            ("EOF", 0),
+            ("IDENT", 1),
+            ("LBRACE", 2),
+            ("RBRACE", 3),
+            ("KEYWORD", 4),
+        ]
+        .iter()
+        .cloned()
+        .collect();
+        map
+    };
 }
