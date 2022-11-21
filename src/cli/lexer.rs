@@ -24,11 +24,7 @@ impl LexerState {
         }
     }
 
-    pub fn transition(
-        &mut self,
-        state: StateType,
-        token_index: usize,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn transition(&mut self, state: StateType, token_index: usize) -> Result<(), String> {
         match state {
             StateType::INIT => {
                 panic!("Lexer error. Cannot set to init state.");
@@ -39,30 +35,34 @@ impl LexerState {
                     || self.state == StateType::LBRACE
                 {
                     self.state = state;
+                    return Ok(());
                 } else {
-                    panic!("Lexer error. State transition failed. Expected INIT or RBRACE. State machine in: {:?}. Token index: {}", self.state, token_index);
+                    return Err(format!("Lexer error. State transition failed. Expected INIT or RBRACE. State machine in: {:?}. Token index: {}", self.state, token_index));
                 }
             }
             StateType::STRUCT => {
                 if self.state == StateType::CRUD {
                     self.state = state;
+                    return Ok(());
                 } else {
-                    panic!("Lexer error. State transition failed. Expected CRUD. State machine in: {:?}. Token index: {}", self.state, token_index);
+                    return Err(format!("Lexer error. State transition failed. Expected CRUD. State machine in: {:?}. Token index: {}", self.state, token_index));
                 }
             }
             StateType::IDENT => {
                 if self.state == StateType::STRUCT {
                     self.state = state;
+                    return Ok(());
                 } else {
-                    panic!("Lexer error. State transition failed. Expected STRUCT. State machine in: {:?}. Token index: {}", self.state, token_index);
+                    return Err(format!("Lexer error. State transition failed. Expected STRUCT. State machine in: {:?}. Token index: {}", self.state, token_index));
                 }
             }
             StateType::LBRACE => {
                 self.brace_count += 1;
                 if self.state == StateType::IDENT {
                     self.state = state;
+                    return Ok(());
                 } else {
-                    panic!("Lexer error. State transition failed. Expected IDENT. State machine in: {:?}. Token index: {}", self.state, token_index);
+                    return Err(format!("Lexer error. State transition failed. Expected IDENT. State machine in: {:?}. Token index: {}", self.state, token_index));
                 }
             }
             // TODO: needs to be expanded
@@ -71,17 +71,19 @@ impl LexerState {
                 self.brace_count -= 1;
                 if self.state == StateType::LBRACE || self.state == StateType::RBRACE {
                     self.state = state;
+                    return Ok(());
                 } else {
-                    panic!("Lexer error. State transition failed. Expected BLOCK. State machine in: {:?}. Token index: {}", self.state, token_index);
+                    return Err(format!("Lexer error. State transition failed. Expected BLOCK. State machine in: {:?}. Token index: {}", self.state, token_index));
                 }
             }
             StateType::EOF => {
                 if self.brace_count != 0 {
-                    panic!("Lexer error. Invalid brace count.");
+                    return Err("Lexer error. Invalid brace count.".to_string());
                 }
                 self.state == state;
+                return Ok(());
             }
-        }
+        };
         Ok(())
     }
 }
@@ -115,7 +117,7 @@ impl Lexer {
     //      }
     // }
 
-    pub fn parse(input: Vec<&str>) -> Result<Vec<Token>, Box<dyn std::error::Error>> {
+    pub fn parse(input: Vec<&str>) -> Result<Vec<Token>, String> {
         let mut mapped_input = Vec::new();
         for i in input {
             mapped_input.push(String::from(i))
@@ -178,9 +180,7 @@ impl Lexer {
 
 #[cfg(test)]
 mod tests {
-    use std::fmt::format;
-
-    use crate::{cli::token::Token, output, util::vec_compare};
+    use crate::{cli::token::Token, util::vec_compare};
 
     use super::Lexer;
 
