@@ -35,7 +35,7 @@
 
 // in db *db_name* in table *table_name* create column *column_name*
 
-use std::collections::HashMap;
+use std::collections::HashSet;
 
 use lazy_static::lazy_static;
 
@@ -55,48 +55,41 @@ impl Token {
 }
 
 lazy_static! {
-    pub static ref KEYWORDS: HashMap<&'static str, u8> = {
-        let map: HashMap<&'static str, u8> = [
-            ("create", 0),
-            ("read", 1),
-            ("update", 2),
-            ("delete", 3),
-            ("in", 4),
-            ("database", 5),
-            ("table", 6),
-            ("column", 7),
+    pub static ref KEYWORDS: HashSet<&'static str> = {
+        let map: HashSet<&'static str> = [
+            ("create"),
+            ("read"),
+            ("update"),
+            ("delete"),
+            ("in"),
+            ("database"),
+            ("table"),
+            ("column"),
         ]
         .iter()
         .cloned()
         .collect();
         map
     };
-    pub static ref CRUD_KEYWORDS: HashMap<&'static str, u8> = {
-        let map: HashMap<&'static str, u8> =
-            [("create", 0), ("read", 1), ("update", 2), ("delete", 3)]
-                .iter()
-                .cloned()
-                .collect();
-        map
-    };
-    pub static ref STRUCT_KEYWORDS: HashMap<&'static str, u8> = {
-        let map: HashMap<&'static str, u8> = [("database", 0), ("table", 1), ("column", 2)]
+    pub static ref CRUD_KEYWORDS: HashSet<&'static str> = {
+        let map: HashSet<&'static str> = [("create"), ("read"), ("update"), ("delete")]
             .iter()
             .cloned()
             .collect();
         map
     };
-    pub static ref TOKEN_TYPES: HashMap<&'static str, u8> = {
-        let map: HashMap<&'static str, u8> = [
-            ("EOF", 0),
-            ("IDENT", 1),
-            ("LBRACE", 2),
-            ("RBRACE", 3),
-            ("KEYWORD", 4),
-        ]
-        .iter()
-        .cloned()
-        .collect();
+    pub static ref STRUCT_KEYWORDS: HashSet<&'static str> = {
+        let map: HashSet<&'static str> = [("database"), ("table"), ("column")]
+            .iter()
+            .cloned()
+            .collect();
+        map
+    };
+    pub static ref TOKEN_TYPES: HashSet<&'static str> = {
+        let map: HashSet<&'static str> = [("EOF"), ("IDENT"), ("LBRACE"), ("RBRACE"), ("KEYWORD")]
+            .iter()
+            .cloned()
+            .collect();
         map
     };
 }

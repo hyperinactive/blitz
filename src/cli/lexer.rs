@@ -30,61 +30,60 @@ impl LexerState {
                 panic!("Lexer error. Cannot set to init state.");
             }
             StateType::CRUD => {
-                if self.state == StateType::INIT
+                return if self.state == StateType::INIT
                     || self.state == StateType::RBRACE
                     || self.state == StateType::LBRACE
                 {
                     self.state = state;
-                    return Ok(());
+                    Ok(())
                 } else {
-                    return Err(format!("Lexer error. State transition failed. Expected INIT or RBRACE. State machine in: {:?}. Token index: {}", self.state, token_index));
-                }
+                    Err(format!("Lexer error. State transition failed. Expected INIT or RBRACE. State machine in: {:?}. Token index: {}", self.state, token_index))
+                };
             }
             StateType::STRUCT => {
-                if self.state == StateType::CRUD {
+                return if self.state == StateType::CRUD {
                     self.state = state;
-                    return Ok(());
+                    Ok(())
                 } else {
-                    return Err(format!("Lexer error. State transition failed. Expected CRUD. State machine in: {:?}. Token index: {}", self.state, token_index));
-                }
+                    Err(format!("Lexer error. State transition failed. Expected CRUD. State machine in: {:?}. Token index: {}", self.state, token_index))
+                };
             }
             StateType::IDENT => {
-                if self.state == StateType::STRUCT {
+                return if self.state == StateType::STRUCT {
                     self.state = state;
-                    return Ok(());
+                    Ok(())
                 } else {
-                    return Err(format!("Lexer error. State transition failed. Expected STRUCT. State machine in: {:?}. Token index: {}", self.state, token_index));
-                }
+                    Err(format!("Lexer error. State transition failed. Expected STRUCT. State machine in: {:?}. Token index: {}", self.state, token_index))
+                };
             }
             StateType::LBRACE => {
                 self.brace_count += 1;
-                if self.state == StateType::IDENT {
+                return if self.state == StateType::IDENT {
                     self.state = state;
-                    return Ok(());
+                    Ok(())
                 } else {
-                    return Err(format!("Lexer error. State transition failed. Expected IDENT. State machine in: {:?}. Token index: {}", self.state, token_index));
-                }
+                    Err(format!("Lexer error. State transition failed. Expected IDENT. State machine in: {:?}. Token index: {}", self.state, token_index))
+                };
             }
+
             // TODO: needs to be expanded
             // for now only allows empty braces {}
             StateType::RBRACE => {
                 self.brace_count -= 1;
-                if self.state == StateType::LBRACE || self.state == StateType::RBRACE {
+                return if self.state == StateType::LBRACE || self.state == StateType::RBRACE {
                     self.state = state;
-                    return Ok(());
+                    Ok(())
                 } else {
-                    return Err(format!("Lexer error. State transition failed. Expected BLOCK. State machine in: {:?}. Token index: {}", self.state, token_index));
-                }
+                    Err(format!("Lexer error. State transition failed. Expected BLOCK. State machine in: {:?}. Token index: {}", self.state, token_index))
+                };
             }
             StateType::EOF => {
                 if self.brace_count != 0 {
                     return Err("Lexer error. Invalid brace count.".to_string());
                 }
-                self.state == state;
                 return Ok(());
             }
         };
-        Ok(())
     }
 }
 
@@ -137,14 +136,14 @@ impl Lexer {
                 break;
             }
 
-            if CRUD_KEYWORDS.contains_key(String::as_str(&current)) {
+            if CRUD_KEYWORDS.contains(String::as_str(&current)) {
                 state_machine.transition(StateType::CRUD, j)?;
                 token_output.push(Token::new("KEYWORD", Some(current)));
                 j += 1;
                 continue;
             }
 
-            if STRUCT_KEYWORDS.contains_key(String::as_str(&current)) {
+            if STRUCT_KEYWORDS.contains(String::as_str(&current)) {
                 state_machine.transition(StateType::STRUCT, j)?;
                 token_output.push(Token::new("KEYWORD", Some(current)));
                 j += 1;
