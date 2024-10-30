@@ -1,3 +1,9 @@
+use std::{
+    borrow::{Borrow, BorrowMut},
+    cell::{Cell, RefCell},
+    rc::Rc,
+};
+
 use super::token::{Token, CRUD_KEYWORDS, STRUCT_KEYWORDS};
 
 #[derive(PartialEq, Debug)]
@@ -92,6 +98,14 @@ impl LexerState {
 pub struct Lexer {}
 
 impl Lexer {
+    pub fn is_string_numeric(str: String) -> bool {
+        for c in str.chars() {
+            if !c.is_numeric() {
+                return false;
+            }
+        }
+        return true;
+    }
     // keyword keyword ident {
     //     keyword keyword ident {
     //         keyword keyword ident {
@@ -107,7 +121,7 @@ impl Lexer {
     // create database ident {
     //     create table ident {
     //         create column ident {
-    //             ....
+    //             { type STRING }
     //         }
     //         create column ident {
     //             ....
@@ -168,6 +182,49 @@ impl Lexer {
             token_output.push(Token::new("IDENT", Some(current)));
             j += 1;
         }
+
+        Ok(token_output)
+    }
+
+    pub fn parse_raw_string(input: String) -> Result<Vec<Token>, String> {
+        let mut token_output: Vec<Token> = Vec::new();
+
+        let i_len = input.len();
+        let mut i: usize = 0;
+
+        let mut temp_input = String::from("");
+        let mut input_iter = input.chars().enumerate();
+
+        // for i in input_iter.len {
+        //     println!("{}", i);
+        // }
+
+        let mut index: usize = 0;
+        let input_length: usize = input.bytes().len();
+
+        // for c in input_iter {
+        //     let peek = input_iter.peek();
+
+        //     if Self::is_string_numeric(temp_input.to_string()) {
+        //         match peek {
+        //             Some(v) => {
+        //                 if Self::is_string_numeric(v.to_string()) {
+        //                     token_output.push(Token::new("NUM", Some(v.to_string())));
+        //                 }
+        //             }
+        //             None => continue,
+        //         }
+        //     }
+
+        //     // if (temp_input.chars() && !isNum(peek)) {
+        //     //     this.tokens.push({
+        //     //         type: TokenType.NUM,
+        //     //         value: tempString.trim(),
+        //     //     });
+        //     //     tempString = "";
+        //     //     continue;
+        //     // }
+        // }
 
         Ok(token_output)
     }
@@ -243,7 +300,7 @@ mod tests {
 
     #[test]
     #[should_panic(
-        expected = "Lexer error. State transition failed. Expected IDENT. State machine in: LBRACE"
+        expected = "Lexer error. State transition failed. Expected IDENT. State machine in: INIT. Token index: 0"
     )]
     fn panic_at_init() {
         let input = vec!["{", "create", "database", "jojo", "{", "}", "}"];
