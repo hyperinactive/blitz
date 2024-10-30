@@ -2,7 +2,7 @@ use std::sync::mpsc::{self};
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-use super::server::Job;
+use super::thread_pool::Job;
 
 pub struct Worker {
     pub id: usize,

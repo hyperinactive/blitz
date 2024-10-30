@@ -1,9 +1,9 @@
+use crate::core::database::Database;
 use crate::{cli::lexer::Lexer, output, outputln};
 use std::{
     io::{self, Write},
     rc::Rc,
 };
-use crate::core::database::Database;
 
 pub struct Processor {}
 
@@ -21,6 +21,7 @@ impl Processor {
 
         loop {
             let mut input_ptr = Rc::clone(&input);
+
             output!("");
             io::stdout().flush().unwrap();
 
@@ -42,12 +43,16 @@ impl Processor {
                     Ok(tokens) => println!("{:#?}", tokens),
                     Err(e) => outputln!(e),
                 };
+
+                outputln!("Command successfully executed");
                 continue;
             }
 
             if args[0] == "exit" {
                 break;
             }
+
+            outputln!("Unknown command");
         }
     }
 }
